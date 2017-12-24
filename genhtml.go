@@ -92,6 +92,7 @@ func main()  {
 }
 func (r TraceHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	println("get",req.URL.Path," from ",req.RemoteAddr)
+
 	r.h.ServeHTTP(w, req)
 }
 type TraceHandler struct {
