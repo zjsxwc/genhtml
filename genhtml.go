@@ -75,8 +75,8 @@ func main()  {
 	templateHtml,err := ioutil.ReadFile("template.html")
 	html := strings.Replace(string(templateHtml), "[[NAMES]]", string(jsondata), -1)
 	f, err := os.Create("index.html")
-	defer f.Close()
 	f.WriteString(html)
+	f.Close()
 
 	isServer := flag.Bool("server", false, "Run as http server")
 	port := flag.String("port", "8083", "Server listen port")
