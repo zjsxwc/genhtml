@@ -79,10 +79,10 @@ func main()  {
 	f.WriteString(html)
 
 	isServer := flag.Bool("server", false, "Run as http server")
+	port := flag.String("port", "8083", "Server listen port")
 	flag.Parse()
 	if *isServer {
 		fmt.Println("start server")
-		port := flag.String("port", "8083", "Server listen port")
 		h := http.FileServer(http.Dir(path))
 		http.Handle("/", TraceHandler{h})
 		println("Listening on port ", *port,"...")
