@@ -82,12 +82,11 @@ func main()  {
 	flag.Parse()
 	if *isServer {
 		fmt.Println("start server")
-		port := "8080"//Default port
-		if len(os.Args)>1 { port = strings.Join(os.Args[1:2],"")}
+		port := flag.String("port", "8083", "Server listen port")
 		h := http.FileServer(http.Dir(path))
 		http.Handle("/", TraceHandler{h})
-		println("Listening on port ",port,"...")
-		log.Fatal("ListenAndServe: ", http.ListenAndServe(":"+port, nil))
+		println("Listening on port ", *port,"...")
+		log.Fatal("ListenAndServe: ", http.ListenAndServe(":"+ *port, nil))
 	}
 
 }
