@@ -49,13 +49,19 @@ func checkErr(err error) {
 }
 
 func getCurrentPath() string {
-	file, _ := exec.LookPath(os.Args[0])
-	path, _ := filepath.Abs(file)
-	splitstring := strings.Split(path, "\\")
-	size := len(splitstring)
-	splitstring = strings.Split(path, splitstring[size-1])
-	ret := strings.Replace(splitstring[0], "\\", "/", size-1)
-	return ret
+	file, err := exec.LookPath(os.Args[0])
+	if err != nil {
+        fmt.Printf("exec.LookPath(%s), err: %s\n", os.Args[0], err)
+        return ""
+    }
+	path, err := filepath.Abs(file)
+    if err != nil {
+        fmt.Printf("filepath.Abs(%s), err: %s\n", file, err)
+        return ""
+    }
+
+    dir := filepath.Dir(path)
+	return dir
 }
 
 func (r TraceHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
