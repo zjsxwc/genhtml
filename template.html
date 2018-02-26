@@ -10,10 +10,9 @@
 
 
 <div id="app">
-
-    <ul id="example-1">
+    <ul>
         <li v-for="name in names">
-           <div @click="play(name)">{{ name }}</div>
+           <div @click="play(name)" style="cursor: pointer;">{{ name }}</div>
         </li>
     </ul>
 
