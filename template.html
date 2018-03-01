@@ -12,22 +12,25 @@
 <div id="app">
     <ul>
         <li v-for="name in names">
-           <div @click="play(name)" style="cursor: pointer;">{{ name }}</div>
+            <div @click="play(name)" style="cursor: pointer;">{{ name }}</div>
         </li>
     </ul>
 
     <video v-if="currentPlayName" id="my-video" class="video-js" controls preload="auto" width="640" height="264"
-            data-setup="{}">
+           data-setup="{}">
         <source :src="currentPlayName" type='video/mp4'>
         <p class="vjs-no-js">
             To view this video please enable JavaScript, and consider upgrading to a web browser that
             <a href="http://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a>
         </p>
     </video>
+
+    <button v-on:click="refresh">refresh</button>
 </div>
 
 
 <script>
+    const RET_CODE_OK = 100;
     var app = new Vue({
         el: '#app',
         data: {
@@ -37,10 +40,24 @@
         methods: {
             play: function (name) {
                 this.currentPlayName = null;
-                this.$nextTick(function(){
-                    console.log("xxxx")
+                this.$nextTick(function () {
+                    console.log("start to play video " + name);
                     this.currentPlayName = name;
                 }.bind(this))
+            },
+            refresh: function () {
+                //The `fetch` method bellow needs the chrome browser support
+                fetch("/cmd-refresh").then(function (response) {
+                    var reader = response.body.getReader();
+                    reader.read().then(function processText({ done, value }) {
+                        if (value && value[0]) {
+                            var retCode = value[0];
+                            if (retCode == RET_CODE_OK) {
+                                window.location.reload();
+                            }
+                        }
+                    });
+                });
             }
         }
     })

@@ -76,8 +76,8 @@ type TraceHandler struct {
 	h http.Handler
 }
 
-func main() {
-	fmt.Println("genhtml")
+
+func genHtmlFile() {
 	path := getCurrentPath()
 	_, names, err := listDir(path)
 
@@ -94,6 +94,21 @@ func main() {
 	f, err := os.Create("index.html")
 	f.WriteString(html)
 	f.Close()
+}
+
+const RET_CODE_OK = 100;
+
+func handCmdRefresh(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("start ")
+	genHtmlFile()
+	w.Write([]byte{RET_CODE_OK})
+}
+
+func main() {
+	fmt.Println("genhtml")
+	path := getCurrentPath()
+
+	genHtmlFile()
 
 	isServer := flag.Bool("server", false, "Run as http server")
 	port := flag.String("port", "8083", "Server listen port")
@@ -102,7 +117,8 @@ func main() {
 		fmt.Println("start server")
 		h := http.FileServer(http.Dir(path))
 		http.Handle("/", TraceHandler{h})
-		println("Listening on port ", *port, "...")
+		http.HandleFunc("/cmd-refresh", handCmdRefresh)
+		fmt.Println("Listening on port ", *port, "...")
 		log.Fatal("ListenAndServe: ", http.ListenAndServe(":" + *port, nil))
 	}
 
