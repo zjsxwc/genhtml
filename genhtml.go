@@ -14,7 +14,7 @@ import (
 )
 
 func listDir(dirPth string) (files []string, names []string, err error) {
-	suffixList := []string{".mp4", ".avi", ".wmv",".mkv",".mov",".flv"}
+	suffixList := []string{".mp4", ".avi", ".wmv", ".mkv", ".mov", ".flv"}
 
 	files = make([]string, 0, 10)
 	names = make([]string, 0, 10)
@@ -26,12 +26,14 @@ func listDir(dirPth string) (files []string, names []string, err error) {
 
 	pthSep := string(os.PathSeparator)
 	for _, fi := range dir {
-		if fi.IsDir() { // 忽略目录
+		if fi.IsDir() {
+			// 忽略目录
 			continue
 		}
-		for _, suffix := range suffixList{
+		for _, suffix := range suffixList {
 			suffix = strings.ToUpper(suffix)
-			if strings.HasSuffix(strings.ToUpper(fi.Name()), suffix) { //匹配文件
+			if strings.HasSuffix(strings.ToUpper(fi.Name()), suffix) {
+				//匹配文件
 				files = append(files, dirPth + pthSep + fi.Name())
 				names = append(names, fi.Name())
 			}
@@ -39,7 +41,7 @@ func listDir(dirPth string) (files []string, names []string, err error) {
 
 	}
 
-	return files,  names, nil
+	return files, names, nil
 }
 
 func checkErr(err error) {
@@ -51,21 +53,21 @@ func checkErr(err error) {
 func getCurrentPath() string {
 	file, err := exec.LookPath(os.Args[0])
 	if err != nil {
-        fmt.Printf("exec.LookPath(%s), err: %s\n", os.Args[0], err)
-        return ""
-    }
+		fmt.Printf("exec.LookPath(%s), err: %s\n", os.Args[0], err)
+		return ""
+	}
 	path, err := filepath.Abs(file)
-    if err != nil {
-        fmt.Printf("filepath.Abs(%s), err: %s\n", file, err)
-        return ""
-    }
+	if err != nil {
+		fmt.Printf("filepath.Abs(%s), err: %s\n", file, err)
+		return ""
+	}
 
-    dir := filepath.Dir(path)
+	dir := filepath.Dir(path)
 	return dir
 }
 
 func (r TraceHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
-	println("get",req.URL.Path," from ",req.RemoteAddr)
+	println("get", req.URL.Path, " from ", req.RemoteAddr)
 
 	r.h.ServeHTTP(w, req)
 }
@@ -74,7 +76,7 @@ type TraceHandler struct {
 	h http.Handler
 }
 
-func main()  {
+func main() {
 	fmt.Println("genhtml")
 	path := getCurrentPath()
 	_, names, err := listDir(path)
@@ -100,8 +102,8 @@ func main()  {
 		fmt.Println("start server")
 		h := http.FileServer(http.Dir(path))
 		http.Handle("/", TraceHandler{h})
-		println("Listening on port ", *port,"...")
-		log.Fatal("ListenAndServe: ", http.ListenAndServe(":"+ *port, nil))
+		println("Listening on port ", *port, "...")
+		log.Fatal("ListenAndServe: ", http.ListenAndServe(":" + *port, nil))
 	}
 
 }
