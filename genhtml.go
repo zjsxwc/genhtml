@@ -44,11 +44,6 @@ func listDir(dirPth string) (files []string, names []string, err error) {
 	return files, names, nil
 }
 
-func checkErr(err error) {
-	if err != nil {
-		panic(err)
-	}
-}
 
 func getCurrentPath() string {
 	file, err := exec.LookPath(os.Args[0])
