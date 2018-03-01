@@ -1,0 +1,67 @@
+<head>
+    <meta charset="utf-8"/>
+    <link href="http://vjs.zencdn.net/5.8.8/video-js.css" rel="stylesheet">
+    <!-- If you'd like to support IE8 -->
+    <script src="http://vjs.zencdn.net/ie8/1.1.2/videojs-ie8.min.js"></script>
+    <script src="http://vjs.zencdn.net/5.8.8/video.js"></script>
+    <script src="https://unpkg.com/vue"></script>
+</head>
+<body>
+
+
+<div id="app">
+    <ul>
+        <li v-for="name in names">
+            <div @click="play(name)" style="cursor: pointer;">{{ name }}</div>
+        </li>
+    </ul>
+
+    <video v-if="currentPlayName" id="my-video" class="video-js" controls preload="auto" width="640" height="264"
+           data-setup="{}">
+        <source :src="currentPlayName" type='video/mp4'>
+        <p class="vjs-no-js">
+            To view this video please enable JavaScript, and consider upgrading to a web browser that
+            <a href="http://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a>
+        </p>
+    </video>
+
+    <button v-on:click="refresh">refresh</button>
+</div>
+
+
+<script>
+    const RET_CODE_OK = 100;
+    var app = new Vue({
+        el: '#app',
+        data: {
+            names: ["2015812051502-cki2y0.mp4","2years-ie.mp4"],
+            currentPlayName: null
+        },
+        methods: {
+            play: function (name) {
+                this.currentPlayName = null;
+                this.$nextTick(function () {
+                    console.log("start to play video " + name);
+                    this.currentPlayName = name;
+                }.bind(this))
+            },
+            refresh: function () {
+                //The `fetch` method bellow needs the chrome browser support
+                fetch("/cmd-refresh").then(function (response) {
+                    var reader = response.body.getReader();
+                    reader.read().then(function processText({ done, value }) {
+                        if (value && value[0]) {
+                            var retCode = value[0];
+                            if (retCode == RET_CODE_OK) {
+                                window.location.reload();
+                            }
+                        }
+                    });
+                });
+            }
+        }
+    })
+
+</script>
+
+</body>

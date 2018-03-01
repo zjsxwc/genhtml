@@ -44,7 +44,6 @@ func listDir(dirPth string) (files []string, names []string, err error) {
 	return files, names, nil
 }
 
-
 func getCurrentPath() string {
 	file, err := exec.LookPath(os.Args[0])
 	if err != nil {
@@ -61,11 +60,9 @@ func getCurrentPath() string {
 	return dir
 }
 
-
 type TraceHandler struct {
 	h http.Handler
 }
-
 
 func genHtmlFile() {
 	path := getCurrentPath()
@@ -89,9 +86,15 @@ func genHtmlFile() {
 const RET_CODE_OK = 100;
 
 func handCmdRefresh(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("start ")
+	fmt.Println("start refresh")
 	genHtmlFile()
 	w.Write([]byte{RET_CODE_OK})
+}
+
+func (r TraceHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
+	println("get", req.URL.Path, " from ", req.RemoteAddr)
+
+	r.h.ServeHTTP(w, req)
 }
 
 func main() {
